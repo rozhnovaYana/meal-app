@@ -19,6 +19,8 @@ import {
 import HomeScreen from "./screens/HomeScreen";
 import CategoryScreen from "./screens/CategoryScreen";
 import MealScreen from "./screens/MealScreen";
+import { FavouritesContextProvider } from "./store/context/Favourites";
+import FavouriteScreen from "./screens/FavouriteScreen";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,7 +44,7 @@ const CategoriesDrawer = () => {
         },
         drawerContentContainerStyle: {
           flex: 1,
-          paddingTop: 70
+          paddingTop: 70,
         },
         drawerActiveTintColor: "#f0f0f0",
         drawerInactiveTintColor: "white",
@@ -65,9 +67,8 @@ const CategoriesDrawer = () => {
             <Ionicons name="heart" size={size} color={color} />
           ),
         }}
-      >
-        {() => <Text>Favourites</Text>}
-      </DrawerNavigator.Screen>
+        component={FavouriteScreen}
+      />
     </DrawerNavigator.Navigator>
   );
 };
@@ -88,33 +89,35 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <StatusBar style="light" />
-      <NavigationContainer>
-        <Navigator
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: "#35241a",
-            },
-            headerTintColor: "#f0f0f0",
-            contentStyle: {
-              backgroundColor: "#463931",
-            },
-          }}
-        >
-          <Screen
-            name="CategoriesDrawer"
-            component={CategoriesDrawer}
-            options={{
-              title: "All Categories",
-              headerShown: false,
+    <FavouritesContextProvider>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <StatusBar style="light" />
+        <NavigationContainer>
+          <Navigator
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "#35241a",
+              },
+              headerTintColor: "#f0f0f0",
+              contentStyle: {
+                backgroundColor: "#463931",
+              },
             }}
-          />
-          <Screen name="Category" component={CategoryScreen} />
-          <Screen name="Meal" component={MealScreen} />
-        </Navigator>
-      </NavigationContainer>
-    </View>
+          >
+            <Screen
+              name="CategoriesDrawer"
+              component={CategoriesDrawer}
+              options={{
+                title: "All Categories",
+                headerShown: false,
+              }}
+            />
+            <Screen name="Category" component={CategoryScreen} />
+            <Screen name="Meal" component={MealScreen} />
+          </Navigator>
+        </NavigationContainer>
+      </View>
+    </FavouritesContextProvider>
   );
 }
 
