@@ -1,34 +1,51 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useContext, useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
   View,
   useWindowDimensions,
-  Pressable
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import DetailsList from "../components/meals/DetailsList";
 import MealItemCard from "../components/meals/MealItemCard";
 import type { MealScreenNavigationProp } from "../types/navigation-types";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import { removeFavourite, addFavourite } from "../store/feautures/favourites";
 
 const MealScreen = ({ route, navigation }: MealScreenNavigationProp) => {
-  const [isInWishList, setInWishList] = useState<boolean>(false);
+  const ids = useSelector((state: RootState) => state.favourites.ids);
+  const dispatch = useDispatch();
   const { item } = route.params;
   const { width } = useWindowDimensions();
+  const isInWishListInitial = ids.includes(item.id);
+  const [isInWishList, setWishlist] = useState(isInWishListInitial);
 
-  const onToggleWishList = () => setInWishList((state: boolean) => !state);
+  const onToggleWishList = () => {
+    setWishlist((state) => {
+      state
+        ? dispatch(removeFavourite({ id: item.id }))
+        : dispatch(addFavourite({ id: item.id }));
+      return !state;
+    });
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: item.title,
       headerRight: () => (
         <Pressable onPress={onToggleWishList}>
-          <Ionicons name={isInWishList ? "heart" : "heart-outline"} size={24} color="#e3b9a9" />
+          <Ionicons
+            name={isInWishList ? "heart" : "heart-outline"}
+            size={24}
+            color="#e3b9a9"
+          />
         </Pressable>
       ),
     });
-  }, [navigation, item.title, isInWishList]);
+  }, [navigation, item.title, onToggleWishList]);
 
   return (
     <ScrollView style={styles.wrapper}>
